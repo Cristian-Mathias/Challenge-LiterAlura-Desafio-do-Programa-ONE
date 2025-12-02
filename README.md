@@ -62,3 +62,6 @@ Apresentação das informações ao usuário através do console, com opções i
 A Gutendex API é uma interface pública que fornece acesso ao catálogo de mais de 70 mil livros do Project Gutenberg, a maior biblioteca digital gratuita do mundo. Ela disponibiliza informações estruturadas sobre os livros, permitindo realizar buscas, filtrar obras e acessar metadados completos sem necessidade de autenticação.
 
 Essa API será a fonte principal de dados do projeto LiterAlura, permitindo consultar títulos, autores, idiomas, número de downloads e outras informações relevantes para montar o catálogo da aplicação.
+
+* Link da API: Gutendex https://gutendex.com/
+* Repositório da API*: GitHub - garethbjohnson/gutendex: Web API for Project Gutenberg ebook metadata https://github.com/garethbjohnson/gutendex
