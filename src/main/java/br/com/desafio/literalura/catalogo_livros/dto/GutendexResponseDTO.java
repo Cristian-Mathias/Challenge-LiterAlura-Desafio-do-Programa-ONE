@@ -42,4 +42,14 @@ public class GutendexResponseDTO {
     public void setResults(List<BookDTO> results) {
         this.results = results;
     }
+
+    @Override
+    public String toString() {
+        return "GutendexResponseDTO{" +
+                "count=" + count +
+                ", next='" + next + '\'' +
+                ", previous='" + previous + '\'' +
+                ", results=" + results +
+                '}';
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.desafio.literalura.catalogo_livros.config;
 
+import br.com.desafio.literalura.catalogo_livros.dto.BookDTO;
 import br.com.desafio.literalura.catalogo_livros.dto.GutendexResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,7 +19,7 @@ public class BookHttpClient {
         this.client = HttpClient.newHttpClient();
     }
 
-    public String buscarLivros() throws Exception {
+    public GutendexResponseDTO buscarLivros() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://gutendex.com/books/?search=java"))
                 .GET()
@@ -33,10 +34,17 @@ public class BookHttpClient {
 
         GutendexResponseDTO resposta = mapper.readValue(json, GutendexResponseDTO.class);
 
-        System.out.println("Total de livros encontrados: " + resposta.getCount());
-        System.out.println("Título do primeiro livro: " + resposta.getResults().get(0).getTitle());
-        System.out.println("Autor(es): " + resposta.getResults().get(0).getAuthors().get(0).getName());
+        return resposta;
+    }
 
-        return json;
+    public void imprimirLivros(GutendexResponseDTO resposta){
+        System.out.println("Total de livros encontrados: " + resposta.getCount());
+        for (BookDTO livro : resposta.getResults()) {
+            System.out.println("Título: " + livro.getTitle());
+            System.out.print("Autores: ");
+            livro.getAuthors().forEach(a -> System.out.print(a.getName() + " "));
+            System.out.println("\nDownload Count: " + livro.getDownloadCount());
+            System.out.println("---------------------------");
+        }
     }
 }

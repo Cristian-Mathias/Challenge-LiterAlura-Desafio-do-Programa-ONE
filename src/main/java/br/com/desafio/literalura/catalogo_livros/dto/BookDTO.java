@@ -1,5 +1,6 @@
 package br.com.desafio.literalura.catalogo_livros.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -11,7 +12,17 @@ public class BookDTO {
     private List<AuthorDTO> authors;
     private List<String> bookshelves;
     private List<String> languages;
-    private int download_count;
+
+    @JsonAlias("download_count")
+    private int downloadCount;
+
+    public int getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(int downloadCount) {
+        this.downloadCount = downloadCount;
+    }
 
     public List<AuthorDTO> getAuthors() {
         return authors;
@@ -27,14 +38,6 @@ public class BookDTO {
 
     public void setBookshelves(List<String> bookshelves) {
         this.bookshelves = bookshelves;
-    }
-
-    public int getDownload_count() {
-        return download_count;
-    }
-
-    public void setDownload_count(int download_count) {
-        this.download_count = download_count;
     }
 
     public int getId() {
@@ -60,4 +63,17 @@ public class BookDTO {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String toString() {
+        return "BookDTO{" +
+                "authors=" + authors +
+                ", id=" + id +
+                ", title='" + title + '\'' +
+                ", bookshelves=" + bookshelves +
+                ", languages=" + languages +
+                ", downloadCount=" + downloadCount +
+                '}';
+    }
+
 }
