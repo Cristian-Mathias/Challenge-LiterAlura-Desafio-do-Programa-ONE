@@ -1,19 +1,26 @@
 package br.com.desafio.literalura.catalogo_livros;
 
-import br.com.desafio.literalura.catalogo_livros.config.BookHttpClient;
-import br.com.desafio.literalura.catalogo_livros.dto.GutendexResponseDTO;
+import br.com.desafio.literalura.catalogo_livros.service.BookService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CatalogoLivrosApplication {
+public class CatalogoLivrosApplication implements CommandLineRunner {
 
-	public static void main(String[] args) throws Exception {
+
+	private BookService bookService;
+
+    public CatalogoLivrosApplication(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+    public static void main(String[] args) throws Exception {
 		SpringApplication.run(CatalogoLivrosApplication.class, args);
-
-		BookHttpClient client = new BookHttpClient();
-		GutendexResponseDTO resposta = client.buscarLivros();
-		client.imprimirLivros(resposta);
 	}
 
+	@Override
+	public void run(String... args) throws Exception {
+		bookService.exibirMenu();
+	}
 }
