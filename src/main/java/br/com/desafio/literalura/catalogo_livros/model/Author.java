@@ -1,7 +1,6 @@
 package br.com.desafio.literalura.catalogo_livros.model;
 
-
-import br.com.desafio.literalura.catalogo_livros.dto.AuthorDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,12 +13,15 @@ public class Author {
 
     @Column(name = "author_name", nullable = false)
     private String name;
+    private Integer birthyear;
+    private Integer deathyear;
 
-    public Author() {
-    }
+    public Author(){}
 
-    public Author(String name) {
+    public Author(String name, Integer birthyear, Integer deathyear) {
         this.name = name;
+        this.birthyear = birthyear;
+        this.deathyear = deathyear;
     }
 
     public Long getId() {
@@ -36,5 +38,21 @@ public class Author {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getBirthyear() {
+        return birthyear;
+    }
+
+    public void setBirthyear(Integer birthyear) {
+        this.birthyear = birthyear;
+    }
+
+    public Integer getDeathyear() {
+        return deathyear;
+    }
+
+    public void setDeathyear(Integer deathyear) {
+        this.deathyear = deathyear;
     }
 }

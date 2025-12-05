@@ -74,12 +74,26 @@ public class BookService {
         if (opcao.equalsIgnoreCase("S")) {
             for (var dto : resposta.getResults()) {
 
-                String nomeAutor = (dto.getAuthors() != null && !dto.getAuthors().isEmpty())
-                        ? dto.getAuthors().get(0).getName()
-                        : "Autor desconhecido";
+                Author author = null;
 
-                Author author = authorRepository.findByName(nomeAutor)
-                        .orElseGet(() -> authorRepository.save(new Author(nomeAutor)));
+                if (dto.getAuthors() != null && !dto.getAuthors().isEmpty()) {
+                    var jsonAuthor = dto.getAuthors().get(0);
+
+                    if (jsonAuthor.getName() != null && !jsonAuthor.getName().isBlank()) {
+                        author = authorRepository.findByName(jsonAuthor.getName())
+                                .orElseGet(() -> authorRepository.save(
+                                        new Author(
+                                                jsonAuthor.getName(),
+                                                jsonAuthor.getBirthyear(),
+                                                jsonAuthor.getDeathyear()
+                                        )
+                                ));
+                    } else {
+                        System.out.println("Autor inválido, livro não terá autor salvo: " + dto.getTitle());
+                    }
+                } else {
+                    System.out.println("Livro sem autores: " + dto.getTitle());
+                }
 
                 Book book = new Book(dto);
                 book.setAuthor(author);
@@ -93,6 +107,7 @@ public class BookService {
             System.out.println("Operação cancelada.");
         }
     }
+
 
     @Transactional
     private void listarTodosLivros() {
@@ -114,14 +129,51 @@ public class BookService {
     }
 
     private void listarAutoresRegistrados() {
-        System.out.println("Listando livros por autores registrados...");
+        List<Author> authors = authorRepository.findAll();
+
+        if (authors.isEmpty()){
+            System.out.println("Nenhum autor cadastrado no banco.");
+            return;
+        }
+
+        System.out.println("Autores registrados:");
+        imprimirAutores(authors);
     }
 
     private void listarAutoresVivosPorAno(){
-        System.out.println("Listando autores vivos em determinado ano...");
+        System.out.print("Digite o ano: ");
+        int ano = Integer.parseInt(scanner.nextLine());
+
+        List<Author> authors = authorRepository.findLivingAuthorsByYear(ano);
+
+        if (authors.isEmpty()) {
+            System.out.println("Nenhum autor vivo encontrado no ano " + ano);
+            return;
+        }
+
+        System.out.println("Autores vivos em " + ano + ":");
+        imprimirAutores(authors);
     }
 
     private  void listarLivrosPorIdioma(){
         System.out.println("Digite o idioma (ex: en, pt, fr): ");
+    }
+
+
+    private void imprimirAutores(List<Author> authors) {
+        if (authors.isEmpty()) {
+            System.out.println("Nenhum autor encontrado.");
+            return;
+        }
+
+        for (Author author : authors) {
+            String birth = author.getBirthyear() != null ? author.getBirthyear().toString() : "Desconhecido";
+            String death = author.getDeathyear() != null ? author.getDeathyear().toString() : "Ainda vivo";
+
+            System.out.println("---------------------------");
+            System.out.println("Nome: " + author.getName());
+            System.out.println("Ano de nascimento: " + birth);
+            System.out.println("Ano de falecimento: " + death);
+        }
     }
 }
