@@ -2,8 +2,15 @@ package br.com.desafio.literalura.catalogo_livros.service;
 
 import br.com.desafio.literalura.catalogo_livros.config.BookHttpClient;
 import br.com.desafio.literalura.catalogo_livros.dto.GutendexResponseDTO;
+import br.com.desafio.literalura.catalogo_livros.model.Author;
+import br.com.desafio.literalura.catalogo_livros.model.Book;
+import br.com.desafio.literalura.catalogo_livros.repository.AuthorRepository;
+import br.com.desafio.literalura.catalogo_livros.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Scanner;
 
 @Service
@@ -11,8 +18,14 @@ public class BookService {
     private final Scanner scanner = new Scanner(System.in);
     private final BookHttpClient httpClient;
 
-    public BookService(BookHttpClient httpClient) {
+    @Autowired
+    private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
+
+    public BookService(BookHttpClient httpClient, BookRepository bookRepository, AuthorRepository authorRepository) {
         this.httpClient = httpClient;
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
     }
 
     public void exibirMenu() {
@@ -32,7 +45,7 @@ public class BookService {
 
             switch (opcao) {
                 case 1 -> buscarLivroPorTitulo();
-                case 2 -> listarLivrosRegistrados();
+                case 2 -> listarTodosLivros();
                 case 3 -> listarAutoresRegistrados();
                 case 4 -> listarAutoresVivosPorAno();
                 case 5 -> listarLivrosPorIdioma();
@@ -42,16 +55,62 @@ public class BookService {
         }
     }
 
-    public void buscarLivroPorTitulo(){
+    public void buscarLivroPorTitulo() {
         System.out.print("Digite o título: ");
         String titulo = scanner.nextLine();
 
         GutendexResponseDTO resposta = httpClient.buscarLivrosPorTitulo(titulo);
+
+        if (resposta == null || resposta.getResults().isEmpty()) {
+            System.out.println("Nenhum livro encontrado para o título informado.");
+            return;
+        }
+
         httpClient.imprimirLivros(resposta);
+
+        System.out.print("Deseja salvar os livros encontrados no banco? (S/N): ");
+        String opcao = scanner.nextLine();
+
+        if (opcao.equalsIgnoreCase("S")) {
+            for (var dto : resposta.getResults()) {
+
+                String nomeAutor = (dto.getAuthors() != null && !dto.getAuthors().isEmpty())
+                        ? dto.getAuthors().get(0).getName()
+                        : "Autor desconhecido";
+
+                Author author = authorRepository.findByName(nomeAutor)
+                        .orElseGet(() -> authorRepository.save(new Author(nomeAutor)));
+
+                Book book = new Book(dto);
+                book.setAuthor(author);
+                bookRepository.save(book);
+
+                System.out.println("Livro salvo: " + book.getTitle());
+            }
+
+            System.out.println("Todos os livros salvos com sucesso!");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
     }
 
-    private void listarLivrosRegistrados() {
-        System.out.println("Listando livros registrados...");
+    @Transactional
+    private void listarTodosLivros() {
+        List<Book> books = bookRepository.findAllWithAuthors();
+
+        if(books.isEmpty()){
+            System.out.println("Nenhum livro cadastrado no banco.");
+        }
+
+        for (Book book : books) {
+            String autor = book.getAuthor() != null ? book.getAuthor().getName() : "Autor desconhecido";
+
+            System.out.println("---------------------------");
+            System.out.println("Título: " + book.getTitle());
+            System.out.println("Autor: " + autor);
+            System.out.println("Idioma: " + book.getLanguage());
+            System.out.println("Downloads: " + book.getDownloadCount());
+        }
     }
 
     private void listarAutoresRegistrados() {
@@ -63,6 +122,6 @@ public class BookService {
     }
 
     private  void listarLivrosPorIdioma(){
-        System.out.println("Listando livros por idiomas...");
+        System.out.println("Digite o idioma (ex: en, pt, fr): ");
     }
 }

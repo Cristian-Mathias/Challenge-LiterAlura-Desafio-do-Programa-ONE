@@ -6,16 +6,16 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GutendexResponseDTO {
-    private int count;
+    private Long count;
     private String next;
     private String previous;
     private List<BookDTO> results;
 
-    public int getCount() {
+    public Long getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(Long count) {
         this.count = count;
     }
 
@@ -41,15 +41,5 @@ public class GutendexResponseDTO {
 
     public void setResults(List<BookDTO> results) {
         this.results = results;
-    }
-
-    @Override
-    public String toString() {
-        return "GutendexResponseDTO{" +
-                "count=" + count +
-                ", next='" + next + '\'' +
-                ", previous='" + previous + '\'' +
-                ", results=" + results +
-                '}';
     }
 }

@@ -7,10 +7,9 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BookDTO {
-    private int id;
+    private Long id;
     private String title;
     private List<AuthorDTO> authors;
-    private List<String> bookshelves;
     private List<String> languages;
 
     @JsonAlias("download_count")
@@ -32,19 +31,12 @@ public class BookDTO {
         this.authors = authors;
     }
 
-    public List<String> getBookshelves() {
-        return bookshelves;
-    }
 
-    public void setBookshelves(List<String> bookshelves) {
-        this.bookshelves = bookshelves;
-    }
-
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,17 +55,4 @@ public class BookDTO {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    @Override
-    public String toString() {
-        return "BookDTO{" +
-                "authors=" + authors +
-                ", id=" + id +
-                ", title='" + title + '\'' +
-                ", bookshelves=" + bookshelves +
-                ", languages=" + languages +
-                ", downloadCount=" + downloadCount +
-                '}';
-    }
-
 }
