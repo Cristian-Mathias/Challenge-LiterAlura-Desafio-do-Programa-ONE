@@ -48,7 +48,7 @@ public class BookService {
                 case 2 -> listarTodosLivros();
                 case 3 -> listarAutoresRegistrados();
                 case 4 -> listarAutoresVivosPorAno();
-                case 5 -> listarLivrosPorIdioma();
+                case 5 -> listarLivrosPorIdiomaMenu();
                 case 0 -> System.out.println("Encerrando aplicação...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -155,8 +155,49 @@ public class BookService {
         imprimirAutores(authors);
     }
 
-    private  void listarLivrosPorIdioma(){
-        System.out.println("Digite o idioma (ex: en, pt, fr): ");
+    private void listarLivrosPorIdiomaMenu() {
+        System.out.println("Escolha um número correspondente ao idioma:");
+        System.out.println(" '1' - Português (pt)");
+        System.out.println(" '2' - Inglês (en)");
+        System.out.print("Opção: ");
+
+        int opcao = Integer.parseInt(scanner.nextLine());
+        if (opcao != 1 && opcao != 2) {
+            System.out.println("Opção inválida! Escolha 1 ou 2.");
+            return;
+        }
+
+        String language = opcao == 1 ? "pt" : "en";
+
+        List<Book> livros = listarLivrosPorIdioma(language);
+        Long total = contarLivrosPorIdioma(language);
+
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro encontrado para o idioma: " + language);
+            return;
+        }
+
+        System.out.println("\n=== Livros encontrados no idioma '" + language + "' ===");
+        for (Book livro : livros) {
+            String autor = livro.getAuthor() != null
+                    ? livro.getAuthor().getName()
+                    : "Autor desconhecido";
+
+            System.out.println("---------------------------");
+            System.out.println("Título: " + livro.getTitle());
+            System.out.println("Autor: " + autor);
+            System.out.println("Downloads: " + livro.getDownloadCount());
+        }
+
+        System.out.println("\nTotal de livros encontrados: " + total);
+    }
+
+    private List<Book> listarLivrosPorIdioma(String language) {
+        return bookRepository.findByLanguageFetchAuthor(language);
+    }
+
+    private Long contarLivrosPorIdioma(String language){
+        return bookRepository.countByLanguage(language);
     }
 
 
