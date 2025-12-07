@@ -7,8 +7,10 @@ import br.com.desafio.literalura.catalogo_livros.model.Book;
 import br.com.desafio.literalura.catalogo_livros.repository.AuthorRepository;
 import br.com.desafio.literalura.catalogo_livros.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 import java.util.DoubleSummaryStatistics;
 import java.util.*;
 
@@ -37,6 +39,7 @@ public class BookService {
             System.out.println("3 - Listar autores registrados");
             System.out.println("4 - Listar autores vivos em um determinado ano");
             System.out.println("5 - Listar livros por idioma");
+            System.out.println("6 - Top 10 livros mais baixados");
             System.out.println("0 - Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -48,6 +51,7 @@ public class BookService {
                 case 3 -> listarAutoresRegistrados();
                 case 4 -> listarAutoresVivosPorAno();
                 case 5 -> listarLivrosPorIdiomaMenu();
+                case 6 -> listarTop10MaisBaixados();
                 case 0 -> System.out.println("Encerrando aplicação...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -237,6 +241,28 @@ public class BookService {
 
     private Long contarLivrosPorIdioma(String language){
         return bookRepository.countByLanguage(language);
+    }
+
+    private void listarTop10MaisBaixados(){
+        Pageable top10 = PageRequest.of(0,10);
+        List<Book> livros = bookRepository.findTop10MostDownloaded(top10);
+
+        if(livros.isEmpty()){
+            System.out.println("Nenhum livro cadastrado para exibir ranking.");
+        }
+
+        System.out.println("\n===== TOP 10 LIVROS MAIS BAIXADOS =====");
+
+        int posicao = 1;
+        for (Book livro : livros){
+            String autor = livro.getAuthor()!= null ? livro.getAuthor().getName() : "Autor desconhecido";
+
+            System.out.println("\n" + posicao + "º lugar:");
+            System.out.println("Título: " + livro.getTitle());
+            System.out.println("Autor: " + autor);
+            System.out.println("Downloads: " + livro.getDownloadCount());
+            posicao++;
+        }
     }
 
 
