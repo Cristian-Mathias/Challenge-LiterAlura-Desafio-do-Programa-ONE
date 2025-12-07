@@ -9,10 +9,8 @@ import br.com.desafio.literalura.catalogo_livros.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.DoubleSummaryStatistics;
+import java.util.*;
 
 @Service
 public class BookService {
@@ -205,26 +203,21 @@ public class BookService {
 
         System.out.println("\nTotal de livros encontrados: " + total);
 
-        int somaDownloads = livros.stream()
-                .mapToInt(Book::getDownloadCount)
-                .sum();
-
-        double mediaDownloads = livros.stream()
-                .mapToInt(Book::getDownloadCount)
-                .average()
-                .orElse(0.0);
+        DoubleSummaryStatistics stats = livros.stream()
+                .mapToDouble(Book::getDownloadCount)
+                .summaryStatistics();
 
         Book maisPopular = livros.stream()
-                .max(Comparator.comparingInt(Book::getDownloadCount))
+                .max(Comparator.comparingDouble(Book::getDownloadCount))
                 .orElse(null);
 
         Book menosPopular = livros.stream()
-                .min(Comparator.comparingInt(Book::getDownloadCount))
+                .min(Comparator.comparingDouble(Book::getDownloadCount))
                 .orElse(null);
 
         System.out.println("\n=== Estatísticas do idioma '" + language + "' ===");
-        System.out.println("Soma total de downloads: " + somaDownloads);
-        System.out.printf("Média de downloads: %.2f%n", mediaDownloads);
+        System.out.println("Soma total de downloads: " + stats.getSum());
+        System.out.printf("Média de downloads: %.2f%n", stats.getAverage());
 
         if (maisPopular != null) {
             System.out.println("Livro mais popular: " + maisPopular.getTitle() +
@@ -235,6 +228,7 @@ public class BookService {
             System.out.println("Livro menos popular: " + menosPopular.getTitle() +
                     " (" + menosPopular.getDownloadCount() + " downloads)");
         }
+
     }
 
     private List<Book> listarLivrosPorIdioma(String language) {
