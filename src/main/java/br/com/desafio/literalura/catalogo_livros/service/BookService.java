@@ -141,20 +141,33 @@ public class BookService {
         imprimirAutores(authors);
     }
 
-    private void listarAutoresVivosPorAno(){
+    private void listarAutoresVivosPorAno() {
         System.out.print("Digite o ano: ");
-        int ano = Integer.parseInt(scanner.nextLine());
+        String input = scanner.nextLine().trim();
+
+        if (!input.matches("\\d+")) {
+            System.out.println(" Ano inválido! Digite apenas números positivos.");
+            return;
+        }
+
+        int ano = Integer.parseInt(input);
+
+        if (ano <= 0) {
+            System.out.println(" Ano inválido! O ano deve ser maior que zero.");
+            return;
+        }
 
         List<Author> authors = authorRepository.findLivingAuthorsByYear(ano);
 
         if (authors.isEmpty()) {
-            System.out.println("Nenhum autor vivo encontrado no ano " + ano);
+            System.out.println("Nenhum autor vivo encontrado no ano " + ano + ".");
             return;
         }
 
-        System.out.println("Autores vivos em " + ano + ":");
+        System.out.println("\n Autores vivos em " + ano + ":");
         imprimirAutores(authors);
     }
+
 
     private void listarLivrosPorIdiomaMenu() {
         System.out.println("Escolha um número correspondente ao idioma:");
