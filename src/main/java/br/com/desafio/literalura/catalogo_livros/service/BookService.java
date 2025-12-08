@@ -40,6 +40,7 @@ public class BookService {
             System.out.println("4 - Listar autores vivos em um determinado ano");
             System.out.println("5 - Listar livros por idioma");
             System.out.println("6 - Top 10 livros mais baixados");
+            System.out.println("7 - Buscar autor por nome");
             System.out.println("0 - Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -52,11 +53,14 @@ public class BookService {
                 case 4 -> listarAutoresVivosPorAno();
                 case 5 -> listarLivrosPorIdiomaMenu();
                 case 6 -> listarTop10MaisBaixados();
+                case 7 -> buscarAutorPorNome();
                 case 0 -> System.out.println("Encerrando aplicação...");
                 default -> System.out.println("Opção inválida!");
             }
         }
     }
+
+
 
     public void buscarLivroPorTitulo() {
         System.out.print("Digite o título: ");
@@ -263,6 +267,35 @@ public class BookService {
             System.out.println("Downloads: " + livro.getDownloadCount());
             posicao++;
         }
+    }
+
+    private void buscarAutorPorNome() {
+        System.out.println("\nDigite o nome do autor que deseja buscar: ");
+        String nome = scanner.nextLine().trim();
+
+        if (nome.isEmpty()){
+            System.out.println("Digite o nome do autor! Não deve estar vazio.");
+            return;
+        }
+
+        if (nome.matches(".*\\d.*")) {
+            System.out.println("Digite somente caracteres! Não deve conter números.");
+            return;
+        }
+
+        List<Author> autores = authorRepository.findByNameAuthor(nome);
+
+        if(autores.isEmpty()){
+            System.out.println("Nenhum autor encontrado contendo: " + nome);
+        }
+
+        System.out.println("\n=== RESULTADO DA BUSCA POR: '" + nome + "' ===");
+
+        autores.forEach(a -> {
+            System.out.println("\nAutor: " + a.getName());
+            if (a.getBirthyear() != null) System.out.println("Ano de nascimento: " + a.getBirthyear());
+            if (a.getDeathyear() != null) System.out.println("Ano de falecimento: " + a.getDeathyear());
+        });
     }
 
 
