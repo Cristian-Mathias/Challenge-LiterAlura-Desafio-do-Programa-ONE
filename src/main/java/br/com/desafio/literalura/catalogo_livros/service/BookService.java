@@ -41,6 +41,8 @@ public class BookService {
             System.out.println("5 - Listar livros por idioma");
             System.out.println("6 - Top 10 livros mais baixados");
             System.out.println("7 - Buscar autor por nome");
+            System.out.println("8 - Listar autores por ano de nascimento");
+            System.out.println("9 - Listar autores por ano de falecimento");
             System.out.println("0 - Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -54,6 +56,8 @@ public class BookService {
                 case 5 -> listarLivrosPorIdiomaMenu();
                 case 6 -> listarTop10MaisBaixados();
                 case 7 -> buscarAutorPorNome();
+                case 8 -> listarAutoresPorAnoNascimento();
+                case 9 -> listarAutoresPorAnoFalecimento();
                 case 0 -> System.out.println("Encerrando aplicação...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -297,6 +301,51 @@ public class BookService {
             if (a.getDeathyear() != null) System.out.println("Ano de falecimento: " + a.getDeathyear());
         });
     }
+
+    private void listarAutoresPorAnoNascimento() {
+        System.out.print("Digite o ano de nascimento: ");
+        String input = scanner.nextLine().trim();
+
+        if (!input.matches("\\d+")) {
+            System.out.println("Ano inválido! Digite apenas números positivos.");
+            return;
+        }
+
+        int ano = Integer.parseInt(input);
+
+        List<Author> autores = authorRepository.findAuthorsByBirthYear(ano);
+
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor encontrado nascido no ano " + ano + ".");
+            return;
+        }
+
+        System.out.println("\n=== Autores nascidos em " + ano + " ===");
+        imprimirAutores(autores);
+    }
+
+    private void listarAutoresPorAnoFalecimento() {
+        System.out.print("Digite o ano de falecimento: ");
+        String input = scanner.nextLine().trim();
+
+        if (!input.matches("\\d+")) {
+            System.out.println("Ano inválido! Digite apenas números positivos.");
+            return;
+        }
+
+        int ano = Integer.parseInt(input);
+
+        List<Author> autores = authorRepository.findAuthorsByDeathYear(ano);
+
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor encontrado falecido no ano " + ano + ".");
+            return;
+        }
+
+        System.out.println("\n=== Autores falecidos em " + ano + " ===");
+        imprimirAutores(autores);
+    }
+
 
 
     private void imprimirAutores(List<Author> authors) {
